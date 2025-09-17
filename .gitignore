@@ -1,0 +1,27 @@
+# ========================
+# Global ignores
+# ========================
+.DS_Store
+Thumbs.db
+*.log
+.env
+
+# ========================
+# Node.js (backend)
+# ========================
+/back_split/node_modules/
+/back_split/package-lock.json
+/back_split/npm-debug.log*
+
+# ========================
+# PHP (frontend)
+# ========================
+/public_frontend_php/vendor/
+/public_frontend_php/composer.lock
+
+# ========================
+# VS Code / Editor
+# ========================
+.vscode/
+.idea/
+*.swp

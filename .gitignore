@@ -25,3 +25,22 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# ==== Ignore local editor/IDE settings ====
+.vscode/
+.idea/
+*.swp
+
+# ==== Node.js ====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==== Env files ====
+.env
+*.local
+
+# ==== OS generated ====
+.DS_Store
+Thumbs.db

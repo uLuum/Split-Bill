@@ -14,7 +14,7 @@
   
   <div id="form-area">
     <!-- Section Anggota -->
-    <h2>Daftar Pesanan</h2>
+    <h2>DAFTAR PESANAN</h2>
     <div class="restoran">
       <div>
         <input id="resto" placeholder="Nama Restoran">
@@ -59,7 +59,7 @@
       
       <!-- Kanan: Rekening -->
       <div class="calc-right">
-        <h2>Rekening Pembayaran</h2>
+        <h2>Data Rekening</h2>
         <div id="accountForm">
           <label>Bank/E-Wallet:</label>
           <select id="bank">
@@ -89,9 +89,10 @@
     
     <hr/>
 
-    <!-- Export PDF -->
+    <!-- Export PDF dan Reset -->
     <div class="button-group">
       <button id="exportPdf" type="button">Download</button>
+      <button id="resetAll" type="button" class="danger">Reset</button>
     </div>
 
   </div>

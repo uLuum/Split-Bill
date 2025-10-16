@@ -209,6 +209,7 @@ async function calculateAndRender(saveAccount = false) {
 document.getElementById('addMember').onclick = () => addMemberSection();
 document.getElementById('calculate').onclick = () => calculateAndRender(false);
 document.getElementById('saveAccount').onclick = () => calculateAndRender(true);
+document.getElementById('resetAll').onclick = resetAllData;
 
 document.getElementById('exportPdf').onclick = async () => {
   const payload = buildPayload();
@@ -236,6 +237,37 @@ document.getElementById('exportPdf').onclick = async () => {
   a.download = 'split_bill.pdf';
   a.click();
 };
+
+/* ===================== Reset Function ===================== */
+function resetAllData() {
+  if (!confirm("Apakah kamu yakin ingin menghapus semua data dan memulai ulang?")) return;
+
+  // Hapus anggota
+  document.getElementById('members').innerHTML = '';
+
+  // Reset form input
+  document.getElementById('resto').value = '';
+  document.getElementById('tax').value = 0;
+  document.getElementById('service').value = 0;
+  document.getElementById('shipping').value = 0;
+  document.getElementById('discount').value = 0;
+
+  // Reset rekening
+  document.getElementById('bank').value = 'Pilih';
+  document.getElementById('accountNumber').value = '';
+  document.getElementById('accountName').value = '';
+
+  // Mengosongkan hasil perhitungan
+  document.getElementById('result').innerHTML = '';
+
+  // Menghapus rekening
+  localStorage.removeItem('paymentAccount');
+
+  // Reset counter anggota
+  memberCounter = 0;
+
+  alert("Data berhasil dihapus!");
+}
 
 /*
 document.getElementById('copyAccount').onclick = async () => {

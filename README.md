@@ -24,7 +24,7 @@ SPLIT BILL/
 ## Cara Menjalankan
 ### Backend
 ```bash
-cd back_splitt
+cd back_split
 npm install
 npm start
 ```

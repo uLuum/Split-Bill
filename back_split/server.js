@@ -249,11 +249,16 @@ app.get('/', (req, res) => {
 // app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
 // PERBAIKAN:
-if (process.env.PassengerAppRoot) {
+// if (process.env.PassengerAppRoot) {
   // Jika berjalan di cPanel / Passenger, biarkan Passenger yang mengontrol jalurnya
-  app.listen(); 
-} else {
+  // app.listen(); 
+//} else {
   // Jika Anda running di komputer lokal (development), gunakan port 3030
-  const PORT = 3030;
-  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-}
+  // const PORT = 3030;
+  //app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+//}
+// Mengunci port ke 3030 untuk di-proxy oleh Apache secara internal
+const PORT = 3030;
+app.listen(PORT, () => {
+    console.log(`Server standalone running on port ${PORT}`);
+});

@@ -244,5 +244,11 @@ app.get('/', (req, res) => {
   res.send('Split Backend berjalan 🚀');
 });
 
-const PORT = process.env.PORT || 3030;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+if (process.env.PassengerAppRoot) {
+  // Jika berjalan di cPanel / Passenger, biarkan Passenger yang mengontrol jalurnya
+  app.listen(); 
+} else {
+  // Jika Anda running di komputer lokal (development), gunakan port 3030
+  const PORT = 3030;
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}

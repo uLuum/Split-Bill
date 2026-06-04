@@ -12,6 +12,11 @@ app.use(cors({
     credentials: true
 }));app.use(bodyParser.json({ limit: '10mb' }));
 
+app.use((req, res, next) => {
+    console.log("Request masuk ke URL:", req.url);
+    next();
+});
+
 require('dayjs/locale/id'); // load locale bahasa Indonesia
 dayjs.locale('id');
 
@@ -233,11 +238,6 @@ app.post('/export-pdf', (req, res) => {
     console.error(e);
     res.status(500).json({ ok: false, error: e.message });
   }
-});
-
-app.use((req, res, next) => {
-    console.log("Request masuk ke URL:", req.url);
-    next();
 });
 
 app.get('/', (req, res) => {

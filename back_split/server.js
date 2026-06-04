@@ -235,6 +235,10 @@ app.post('/export-pdf', (req, res) => {
   }
 });
 
+app.use((req, res, next) => {
+    console.log("Request masuk ke URL:", req.url);
+    next();
+});
 
 app.get('/', (req, res) => {
   res.send('Split Backend berjalan 🚀');

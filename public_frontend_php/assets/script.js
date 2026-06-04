@@ -1,4 +1,4 @@
-const backendUrl = 'http://split.nurulum.web.id';
+const backendUrl = 'https://split.nurulum.web.id';
 
 /* ===================== Helper ===================== */
 function el(tag, props = {}) {

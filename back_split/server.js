@@ -6,8 +6,11 @@ const dayjs = require('dayjs');
 const PDFDocument = require('pdfkit-table');
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(cors({
+    origin: 'https://bill.nurulum.web.id',
+    methods: ['GET', 'POST'],
+    credentials: true
+}));app.use(bodyParser.json({ limit: '10mb' }));
 
 require('dayjs/locale/id'); // load locale bahasa Indonesia
 dayjs.locale('id');

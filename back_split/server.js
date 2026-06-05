@@ -161,7 +161,7 @@ app.post('/export-pdf', (req, res) => {
       rows: [
         ["Total Pesanan", `Rp ${formatMoney(calc.totalItems)}`],
         ["Tax/Pajak", `Rp ${formatMoney(calc.totalTax)} (${payload.charges?.tax || 0}%)`],
-        ["Biaya Layanan", `Rp ${formatMoney(calc.totalCharges)}`],
+        ["Layanan & Ongkir", `Rp ${formatMoney(calc.totalCharges)}`],
         ["Subtotal", `Rp ${formatMoney(calc.grossTotal)}`],
         ["Diskon", `Rp ${formatMoney(calc.discount)} (${calc.discountPercent}%)`],
         ["Grand Total", `Rp ${formatMoney(calc.netTotal)}`],
@@ -178,7 +178,7 @@ app.post('/export-pdf', (req, res) => {
         "List Pesanan",
         "Total Pesanan",
         "Tax/Pajak",
-        "Biaya Layanan",
+        "Layanan & Ongkir",
         "Hemat",
         "Total Bayar"
       ],

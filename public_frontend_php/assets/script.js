@@ -138,11 +138,15 @@ function renderResult(data, account = null) {
   container.appendChild(summaryBox);
   container.appendChild(accountBox);
   out.appendChild(container);
-
+  
+  // ---- PROSES PEMBUNGKUSAN TABEL ----
+  const tableWrapper = el('div');
+  tableWrapper.className = 'table-responsive';
+  
   // Detail anggota
   const table = el('table');
   table.innerHTML =
-    '<tr><th>Nama</th><th>List Pesanan</th><th>Total Pesanan</th><th>Tax/Pajak</th><th>Biaya Layanan</th><th>Hemat</th><th>Total Bayar</th></tr>';
+    '<tr><th>Nama</th><th>List Pesanan</th><th>Total Pesanan</th><th>Tax/Pajak</th><th>Layanan & Ongkir</th><th>Hemat</th><th>Total Bayar</th></tr>';
     
     Object.keys(data.breakdown).forEach((m) => {
       const b = data.breakdown[m];
@@ -161,7 +165,7 @@ function renderResult(data, account = null) {
       // isi kolom baris
       row.innerHTML = `
       <td>${m}</td>
-      <td></td>
+      <td class="items-column"></td>
       <td>Rp ${formatMoney(b.itemsTotal)}</td>
       <td>Rp ${formatMoney(b.tax)}</td>
       <td>Rp ${formatMoney(b.charge)}</td>
@@ -171,17 +175,17 @@ function renderResult(data, account = null) {
       
       // masukkan UL ke dalam kolom kedua
       row.children[1].appendChild(ul);
-      
       table.appendChild(row);
     });
     
-    out.appendChild(table);
+    tableWrapper.appendChild(table);
+    out.appendChild(tableWrapper);
+    
+    // out.appendChild(table);
     
     // const tableWrapper = el('div');
     // tableWrapper.className = 'table-wrapper';
-    
-    // tableWrapper.appendChild(table);
-    // out.appendChild(tableWrapper);
+
 }
 
 /* ===================== Main Function ===================== */

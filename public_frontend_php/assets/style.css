@@ -147,6 +147,80 @@ button.danger:hover {
   background-color: #d32f2f;
 }
 
+/* Layout resto */
+.restoran {
+  text-align: center;
+  margin: 10px 0 20px;
+}
+
+.restoran input {
+  max-width: 400px;
+  margin: 0 auto;
+  display: block;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ======================================================= */
+/* AREA DAFTAR ANGGOTA & INPUT ITEM (FIX OVERFLOW)         */
+/* ======================================================= */
+
+/* Member Section Card */
+.member-section {
+  background: #f9fbe7;
+  border: 1px solid #c5e1a5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  width: 100%;             /* Mengunci agar card tidak melebar melebihi grid */
+  box-sizing: border-box;
+}
+
+/* Tombol Aksi di dalam Card Utama (Tambah Item & Hapus Member) */
+.member-section > button {
+  margin-top: 10px;
+  margin-right: 5px;
+  font-size: 14px;         /* Sedikit dikecilkan agar proporsional di dalam card */
+  padding: 8px 15px;
+}
+
+.member-section hr {
+  margin-top: 15px;
+  border: 0;
+  border-top: 1px solid #c5e1a5;
+}
+
+/* Item Row (Menggunakan Flexbox responsif) */
+.item-row {
+  display: flex;
+  align-items: flex-end;   /* Menjajajakan input dan tombol x agar sejajar di bawah */
+  gap: 10px;
+  margin: 12px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Distribusi Lebar Kolom di Desktop */
+.item-row > div:nth-child(1) { 
+  flex: 2 1 120px;         /* Nama Item: membesar lebih banyak, batas susut aman 120px */
+  min-width: 0;            /* WAJIB: Mengizinkan input mengecil di bawah batas konten */
+} 
+
+.item-row > div:nth-child(2) { 
+  flex: 1 1 80px;          /* Harga: membesar normal, batas susut aman 80px */
+  min-width: 0;            /* WAJIB: Mengizinkan input mengecil di bawah batas konten */
+}
+
+/* Tombol hapus item 'x' */
+button.removeItem {
+  flex: 0 0 auto;          /* Mengunci ukuran tombol agar tidak gepeng atau melar */
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1;
+  height: 39px;            /* Disamakan dengan tinggi total input + label agar presisi */
+  margin: 0;
+}
+
 /* Section 2 kolom */
 .calculation-section {
   display: grid;
@@ -169,115 +243,120 @@ button.danger:hover {
   padding: 20px;
 }
 
-/* Container ringkasan & rekening */
+/* ======================================================= */
+/* AREA RINGKASAN & DATA REKENING (FIX OVERFLOW)           */
+/* ======================================================= */
+
+/* Container Utama Hasil */
 .result-container {
   display: flex;
-  flex-wrap: wrap; /* Fleksibel untuk mobile */
+  flex-wrap: wrap;       /* Mengizinkan box turun ke bawah jika layar sempit */
   gap: 20px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 25px;
 }
 
-.result-container > div {
-  flex: 1;
-  min-width: 250px; /* Cegah box terlalu gepeng */
-}
-
+/* Selector lama '> div' DIHAPUS dan digabungkan langsung di sini */
 .summary-box, .account-box {
-  background: #f6fff6;
+  flex: 1 1 280px;       /* Dasar lebar ideal 280px, otomatis bertumpuk jika layar < 600px */
+  min-width: 0;          /* WAJIB: Memaksa flexbox untuk bisa mengecil melampaui ukuran teks di dalamnya */
+  max-width: 100%;       /* Mencegah box keluar dari kontainer putih utama */
+  background: #f6fff6;   /* Kembali ke warna hijau muda tema asal Anda */
   border: 1px solid #cce5cc;
-  border-radius: 6px;
-  padding: 15px;
-}
-
-/* Layout row input global (pajak, service, dll) */
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.row > div {
-  flex: 1;
-  min-width: 140px; /* Memastikan input input angka sejajar rapi */
-}
-
-/* Layout resto */
-.restoran {
-  text-align: center;
-  margin: 10px 0 20px;
-}
-
-.restoran input {
-  max-width: 400px;
-  margin: 0 auto;
-  display: block;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* Member Section */
-.member-section {
-  background: #f9fbe7;
-  border: 1px solid #c5e1a5;
-  padding: 15px;
   border-radius: 8px;
-  margin-bottom: 15px;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
-/* Item Row */
-.item-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  margin: 8px 0;
-}
-
-.item-row > div:nth-child(1) { flex: 2; } /* Input Nama Item lebih lebar */
-.item-row > div:nth-child(2) { flex: 1; } /* Input Harga */
-
-/* Ringkasan tabel atas */
+/* Tabel Ringkasan Internal */
 .summary-table {
   width: 100%;
-  max-width: 500px; /* Batasi lebar di desktop agar anggun */              
-  margin: 15px auto;        
   border-collapse: collapse;
-  background: #f1f8e9;
+  table-layout: fixed;   /* WAJIB: Membagi porsi lebar kolom secara absolut */
 }
 
 .summary-table th, .summary-table td {
   border: 1px solid var(--border);
-  padding: 8px 12px;
+  padding: 8px 10px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
+/* Pembagian Porsi Kolom Agar Adil & Tidak Saling Desak */
 .summary-table th {
-  width: 50%;
+  width: 45%;            /* Mengunci kolom nama biaya */
+  text-align: left;
   background: #c8e6c9;
   color: var(--primary);
   font-weight: 600;
-  font-size: 14px;
-  text-align: left;
+  white-space: normal;   /* Mengizinkan judul teks panjang melipat ke bawah */
+  word-wrap: break-word;
 }
 
 .summary-table td {
+  width: 55%;            /* Mengunci kolom nominal rupiah */
   text-align: right;
-  font-weight: 500;
-  font-size: 14px;
+  background: #ffffff;   /* Latar belakang putih agar nominal mudah dibaca */
+  white-space: normal;   /* MEMPERBOLEHKAN nilai nominal turun jika space sangat sempit */
+  word-break: break-all; /* Pengaman jika angka nominal sangat panjang */
 }
 
 .summary-table tr:last-child td {
   font-weight: bold;
   color: var(--primary);
+  background: #e8f5e9;
 }
 
-/* Pembungkus Tabel Hasil Utama (PENTING AGAR TIDAK PECAH DI HP) */
+#result {
+  width: 100%;
+  max-width: 100%;
+  display: block; 
+  clear: both;
+}
+
+/* Pembungkus Tabel Hasil Utama ( DIPERBARUI ) */
 .table-responsive {
   width: 100%;
-  overflow-x: auto; /* Memunculkan scrollbar horizontal jika layar kekecilan */
-  -webkit-overflow-scrolling: touch;
+  max-width: 100%;    /* Memaksa wrapper tidak boleh melebihi kontainer putih */
+  overflow-x: auto;   /* Memunculkan scrollbar jika tabel lebih lebar dari layar */
+  display: block;     /* Mengubah tipe display agar fitur overflow-x aktif sempurna */
+  -webkit-overflow-scrolling: touch; /* Scroll halus di layar sentuh HP */
   margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
 }
+
+/* Pengaturan elemen tabel di dalam wrapper responsif */
+.table-responsive table {
+  width: 100%;
+  min-width: 750px;   /* Mengunci lebar minimum tabel agar teks angka tidak berdesakan saat di-scroll */
+  border-collapse: collapse;
+}
+
+/* Penjaga kolom nama & nominal agar teksnya tetap rapi satu baris saat di-scroll */
+.table-responsive table th, 
+.table-responsive table td {
+  padding: 10px 12px;
+  font-size: 14px;
+  white-space: nowrap; 
+}
+
+/* Khusus kolom list pesanan diperbolehkan membungkus teks */
+.table-responsive table td.items-column {
+  white-space: normal !important;
+  text-align: left;
+  min-width: 200px; /* Batas minimal ruang baca list pesanan */
+}
+
+/* Kolom daftar item di dalam tabel */
+table td.items-column {
+  white-space: normal !important; 
+  text-align: left;
+  min-width: 180px;
+}
+
 
 /* Tabel hasil */
 table {
@@ -342,56 +421,80 @@ table td.items-column {
 /* Laptop / Tablet Lanskap: max-width 1024px */
 @media (max-width: 1024px) {
   .container {
+    width: 92%;          /* Sedikit diperlebar dari 90% agar memberi ruang extra di tablet */
     padding: 20px;
+    margin-top: 90px;    /* Menyesuaikan jarak dengan fixed header */
   }
+
+  /* 1. Paksa Grid Member Menjadi 1 Kolom Saja di Tablet Potret */
+  #members {
+    grid-template-columns: 1fr; 
+    gap: 12px;
+  }
+
+  /* Section perhitungan: stack vertikal */
   .calculation-section {
     grid-template-columns: 1fr; /* Menjadi satu kolom vertikal */
   }
+
   .calc-left {
+    padding: 15px;
     border-right: none;   
     border-bottom: 1px solid var(--border); /* Batas ganti ke bawah */
+  }
+
+  .calc-right {
+    padding: 15px;
+  }
+
+  /* 2. PENGAMAN TABLET: Berikan fleksibilitas pada input item sebelum masuk ke mode HP */
+  .item-row {
+    gap: 8px;            /* Memperlebat jarak antar input agar pas di jari */
+  }
+  
+  .item-row > div:nth-child(1) { 
+    flex: 1.5 1 150px;   /* Mengizinkan nama item menyusut lebih fleksibel */
+  }
+  
+  .item-row > div:nth-child(2) { 
+    flex: 1 1 100px;    /* Mengizinkan nominal harga menyusut rapi */
+  }
+  
+  button.removeItem {
+    height: 39px;        /* Memastikan konsistensi tinggi tombol x */
   }
 }
 
 /* HP / Mobile: max-width 600px */
 @media (max-width: 600px) {
-  .container {
-    width: 95%;
-    padding: 15px;
-    margin-top: 90px; /* Menyesuaikan posisi di HP */
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  /* Susunan Tombol bertumpuk rapi di HP */
-  .button-group {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .button-group button {
-    width: 100%; /* Tombol full-width di HP mudah ditekan jempol */
-  }
-
-  /* Item input di dalam member section pecah vertikal */
+  /* Memaksa baris input item pecah secara vertikal jika layar terlalu sempit */
   .item-row {
-    flex-direction: column;
-    gap: 5px;
-    align-items: stretch;
-    border-bottom: 1px dashed var(--border);
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    flex-wrap: wrap;       /* Mengizinkan elemen membungkus ke bawah */
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.5); /* Memberi latar tipis agar baris antar item jelas */
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px dashed #c5e1a5;
+  }
+
+  .item-row > div:nth-child(1) { 
+    flex: 1 1 100%;        /* Input Nama Item memakan 1 baris penuh di HP */
+  }
+
+  .item-row > div:nth-child(2) { 
+    flex: 1 1 calc(100% - 55px); /* Input Harga mengambil sisa ruang setelah dipotong tombol x */
+  }
+
+  button.removeItem {
+    flex: 0 0 45px;        /* Tombol x ditaruh di sebelah kanan input harga secara pas */
+    text-align: center;
+    justify-content: center;
   }
   
-  .item-row button {
-    align-self: flex-end;
-    margin-top: 5px;
-  }
-
-  .row {
-    flex-direction: column;
-    gap: 10px;
+  /* Merapikan susunan tombol utama card di HP */
+  .member-section > button {
+    width: calc(50% - 5px); /* Membagi rata tombol Tambah Item & Hapus berdampingan */
+    display: inline-block;
+    box-sizing: border-box;
   }
 }

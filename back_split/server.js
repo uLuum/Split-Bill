@@ -6,7 +6,9 @@ const dayjs = require('dayjs');
 const PDFDocument = require('pdfkit-table');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://bill.nurulum.web.id'
+}));
 app.use(bodyParser.json({ limit: '10mb' }));
 
 require('dayjs/locale/id'); // load locale bahasa Indonesia
@@ -237,24 +239,8 @@ app.get('/', (req, res) => {
   res.send('Split Backend berjalan 🚀');
 });
 
-const PORT = process.env.PORT || 3030;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
 
-// SEBELUMNYA:
-// const PORT = process.env.PORT || 3030;
-// app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-
-// PERBAIKAN:
-// if (process.env.PassengerAppRoot) {
-  // Jika berjalan di cPanel / Passenger, biarkan Passenger yang mengontrol jalurnya
-  // app.listen(); 
-//} else {
-  // Jika Anda running di komputer lokal (development), gunakan port 3030
-  // const PORT = 3030;
-  //app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-//}
-// Mengunci port ke 3030 untuk di-proxy oleh Apache secara internal
-// const PORT = 3030;
-// app.listen(PORT, () => {
-//    console.log(`Server standalone running on port ${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});

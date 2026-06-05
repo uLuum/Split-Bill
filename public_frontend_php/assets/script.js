@@ -176,6 +176,12 @@ function renderResult(data, account = null) {
     });
     
     out.appendChild(table);
+    
+    // const tableWrapper = el('div');
+    // tableWrapper.className = 'table-wrapper';
+    
+    // tableWrapper.appendChild(table);
+    // out.appendChild(tableWrapper);
 }
 
 /* ===================== Main Function ===================== */

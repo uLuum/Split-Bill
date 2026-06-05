@@ -6,16 +6,8 @@ const dayjs = require('dayjs');
 const PDFDocument = require('pdfkit-table');
 
 const app = express();
-app.use(cors({
-    origin: 'https://bill.nurulum.web.id',
-    methods: ['GET', 'POST'],
-    credentials: true
-}));app.use(bodyParser.json({ limit: '10mb' }));
-
-app.use((req, res, next) => {
-    console.log("Request masuk ke URL:", req.url);
-    next();
-});
+app.use(cors());
+app.use(bodyParser.json({ limit: '10mb' }));
 
 require('dayjs/locale/id'); // load locale bahasa Indonesia
 dayjs.locale('id');
@@ -66,7 +58,7 @@ function calculateSplit(payload) {
 
   const totalItems = Object.values(subtotals).reduce((s, v) => s + v, 0);
 
-  // pajak dihitung dari totalItems (global) → dibagi proporsional nanti
+  // pajak dihitung dari totalItems (global) â†’ dibagi proporsional nanti
   const totalTax = totalItems * (taxPercent / 100);
 
   // biaya layanan global
@@ -208,7 +200,7 @@ app.post('/export-pdf', (req, res) => {
       }),
     };
 
-    // columnsSize: semi-dinamis → Nama & angka fixed, List Pesanan fleksibel
+    // columnsSize: semi-dinamis â†’ Nama & angka fixed, List Pesanan fleksibel
     const memberColumns = [
       50,                               // Nama
       pageWidth - 360, // sisa untuk List Pesanan
@@ -240,9 +232,13 @@ app.post('/export-pdf', (req, res) => {
   }
 });
 
+
 app.get('/', (req, res) => {
   res.send('Split Backend berjalan 🚀');
 });
+
+const PORT = process.env.PORT || 3030;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
 // SEBELUMNYA:
 // const PORT = process.env.PORT || 3030;
@@ -258,7 +254,7 @@ app.get('/', (req, res) => {
   //app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 //}
 // Mengunci port ke 3030 untuk di-proxy oleh Apache secara internal
-const PORT = 3030;
-app.listen(PORT, () => {
-    console.log(`Server standalone running on port ${PORT}`);
-});
+// const PORT = 3030;
+// app.listen(PORT, () => {
+//    console.log(`Server standalone running on port ${PORT}`);
+// });

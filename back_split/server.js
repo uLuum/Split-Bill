@@ -173,14 +173,15 @@ app.post('/export-pdf', (req, res) => {
     // --- Per anggota ---
     const memberTable = {
       title: "Tagihan Per Anggota",
+      // MENGOBAH ARRAY TEKS MENJADI ARRAY OBJEK DENGAN PROPERTY ALIGN: 'CENTER'
       headers: [
-        "Nama",
-        "List Pesanan",
-        "Total Pesanan",
-        "Tax/Pajak",
-        "Layanan & Ongkir",
-        "Hemat",
-        "Total Bayar"
+        { label: "Nama", align: "center", headerAlign: "center" },
+        { label: "List Pesanan", align: "left", headerAlign: "center" },
+        { label: "Total Pesanan", align: "right", headerAlign: "center" },
+        { label: "Tax/Pajak", align: "right", headerAlign: "center" },
+        { label: "Layanan & Ongkir", align: "right", headerAlign: "center" },
+        { label: "Hemat", align: "right", headerAlign: "center" },
+        { label: "Total Bayar", align: "right", headerAlign: "center" }
       ],
       rows: Object.keys(calc.breakdown).map(name => {
         const b = calc.breakdown[name];
@@ -202,14 +203,22 @@ app.post('/export-pdf', (req, res) => {
       }),
     };
 
-    // columnsSize: semi-dinamis â†’ Nama & angka fixed, List Pesanan fleksibel
+    // columnsSize: semi-dinamis → Nama & angka fixed, List Pesanan fleksibel
     const memberColumns = [
-      50,                               // Nama
-      pageWidth - 360, // sisa untuk List Pesanan
-      60, 60, 60, 60, 70                // kolom angka
+      55,              // Ditambah sedikit dari 50 agar nama tidak terpotong ketat
+      pageWidth - 365, // Penyesuaian sisa ruang untuk List Pesanan
+      60, 60, 60, 60, 70 
     ];
 
-    doc.table(memberTable, { width: pageWidth, columnsSize: memberColumns });
+    // OPSI TAMBAHAN PADA PDFKIT-TABLE UNTUK MEMASTIKAN HEADER RATA TENGAH
+    doc.table(memberTable, { 
+      width: pageWidth, 
+      columnsSize: memberColumns,
+      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(9), // Opsional: menebalkan teks header
+      prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+        doc.font("Helvetica").fontSize(8); // Mengembalikan font normal untuk baris data
+      }
+    });
     doc.moveDown();
 
     // --- Rekening ---

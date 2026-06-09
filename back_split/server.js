@@ -17,11 +17,9 @@ dayjs.locale('id');
 // sanitasi input angka: hapus karakter non-digit kecuali . dan -
 function toNumber(x) {
   if (x === null || x === undefined) return 0;
-  // jika sudah number, kembalikan
   if (typeof x === 'number') return Number.isFinite(x) ? x : 0;
   const s = String(x).trim();
   if (s === '') return 0;
-  // hapus semua kecuali digit, titik desimal dan minus
   const cleaned = s.replace(/[^0-9.\-]/g, '');
   const n = parseFloat(cleaned);
   return Number.isFinite(n) ? n : 0;
@@ -45,7 +43,7 @@ function calculateSplit(payload) {
   const charges = payload.charges || {};
   const discountValue = toNumber(payload.discount || 0);
 
-  const taxPercent = toNumber(charges.tax); // <- sekarang dianggap % (misal 10 untuk 10%)
+  const taxPercent = toNumber(charges.tax); // Pajak dalam % (misal 10)
   const service = toNumber(charges.service);
   const shipping = toNumber(charges.shipping);
 
@@ -59,15 +57,21 @@ function calculateSplit(payload) {
   });
 
   const totalItems = Object.values(subtotals).reduce((s, v) => s + v, 0);
+  
+  // Dasar Pengenaan Pajak (DPP) = total pesanan - diskon
+  const dppGlobal = totalItems - discountValue;
 
-  // pajak dihitung dari totalItems (global) â†’ dibagi proporsional nanti
-  const totalTax = totalItems * (taxPercent / 100);
+  // Pajak dihitung dari DPP (setelah diskon)
+  const totalTax = dppGlobal > 0 ? dppGlobal * (taxPercent / 100) : 0;
 
-  // biaya layanan global
+  // Biaya layanan global dibagi rata
   const totalCharges = service + shipping;
-  const grossTotal = totalItems + totalTax + totalCharges;
+  
+  // Grand total tagihan (PERBAIKAN: Mengubah TotalCharges menjadi totalCharges)
+  const netTotal = dppGlobal + totalTax + totalCharges;
+  const grossTotal = totalItems + totalTax + totalCharges; // sebelum diskon
 
-  // hitung pembagian charge per anggota
+  // Hitung pembagian charge per anggota
   const perMemberCharge = members.length > 0 ? totalCharges / members.length : 0;
 
   // breakdown per anggota
@@ -76,25 +80,32 @@ function calculateSplit(payload) {
     const name = (m && m.name) ? String(m.name) : 'Tanpa Nama';
     const items = Array.isArray(m.items) ? m.items : [];
     const itemsTotal = toNumber(subtotals[name]);
+    
+    // Rasio porsi pesanan anggota pada total pesanan keseluruhan
+    const memberRatio = totalItems > 0 ? (itemsTotal / totalItems) : 0;
+    
+    // Diskon proporsional
+    const memberDiscount = discountValue * memberRatio;
+    
+    // DPP tagihan anggota (harga item - porsi diskon)
+    const memberDpp = itemsTotal - memberDiscount;
+    
+    // Pajak proporsional dari DPP anggota
+    const memberTax = memberDpp > 0 ? memberDpp * (taxPercent / 100) : 0;
+    
+    // Total per anggota (Harga barang - diskon) + pajak + layanan
+    const total = memberDpp + memberTax + perMemberCharge;
 
-    // pajak proporsional berdasarkan porsi items anggota
-    const tax = itemsTotal * (taxPercent / 100);
-
-    // subtotal sebelum diskon
-    const subtotal = itemsTotal + tax + perMemberCharge;
-
-    // diskon proporsional: porsi subtotal anggota dibanding subtotal semua anggota
-    const memberDiscount = grossTotal > 0 ? (subtotal / grossTotal) * discountValue : 0;
-
-    const total = subtotal - memberDiscount;
+    // subtotal sebelum diskon visualisasi
+    const subtotal = itemsTotal + (itemsTotal * (taxPercent / 100)) + perMemberCharge;
 
     breakdown[name] = {
       items: items.map(it => ({
-      name: it?.name || 'Item',
-      price: round(toNumber(it?.price))
-    })),
+        name: it?.name || 'Item',
+        price: round(toNumber(it?.price))
+      })),
       itemsTotal: round(itemsTotal),
-      tax: round(tax),
+      tax: round(memberTax),
       charge: round(perMemberCharge),
       subtotal: round(subtotal),
       discount: round(memberDiscount),
@@ -108,8 +119,8 @@ function calculateSplit(payload) {
     totalCharges: round(totalCharges),
     grossTotal: round(grossTotal),
     discount: round(discountValue),
-    discountPercent: grossTotal > 0 ? round((discountValue / grossTotal) * 100) : 0,
-    netTotal: round(grossTotal - discountValue),
+    discountPercent: totalItems > 0 ? round((discountValue / totalItems) * 100) : 0,
+    netTotal: round(netTotal),
     breakdown
   };
 
@@ -153,6 +164,10 @@ app.post('/export-pdf', (req, res) => {
       { align: 'center' }
     );
     doc.moveDown(1);
+    
+    // Menghitung DPP
+    const dppVisual = calc.totalItems - calc.discount;
+    const roundedDiscountPercent = Math.round(calc.discountPercent);
 
     // --- Ringkasan dalam tabel ---
     const summaryTable = {
@@ -160,10 +175,11 @@ app.post('/export-pdf', (req, res) => {
       headers: ["Keterangan", "Jumlah"],
       rows: [
         ["Total Pesanan", `Rp ${formatMoney(calc.totalItems)}`],
+        ["Diskon", `Rp ${formatMoney(calc.discount)} (${roundedDiscountPercent}%)`],
+        ["Setelah Diskon (DPP)", `Rp ${formatMoney(dppVisual)}`],
         ["Tax/Pajak", `Rp ${formatMoney(calc.totalTax)} (${payload.charges?.tax || 0}%)`],
-        ["Layanan & Ongkir", `Rp ${formatMoney(calc.totalCharges)}`],
+        ["Biaya Layanan & Ongkir", `Rp ${formatMoney(calc.totalCharges)}`],
         ["Subtotal", `Rp ${formatMoney(calc.grossTotal)}`],
-        ["Diskon", `Rp ${formatMoney(calc.discount)} (${calc.discountPercent}%)`],
         ["Grand Total", `Rp ${formatMoney(calc.netTotal)}`],
       ],
     };
@@ -173,14 +189,13 @@ app.post('/export-pdf', (req, res) => {
     // --- Per anggota ---
     const memberTable = {
       title: "Tagihan Per Anggota",
-      // MENGOBAH ARRAY TEKS MENJADI ARRAY OBJEK DENGAN PROPERTY ALIGN: 'CENTER'
       headers: [
         { label: "Nama", align: "center", headerAlign: "center" },
         { label: "List Pesanan", align: "left", headerAlign: "center" },
         { label: "Total Pesanan", align: "right", headerAlign: "center" },
+        { label: "Hemat", align: "right", headerAlign: "center" },
         { label: "Tax/Pajak", align: "right", headerAlign: "center" },
         { label: "Layanan & Ongkir", align: "right", headerAlign: "center" },
-        { label: "Hemat", align: "right", headerAlign: "center" },
         { label: "Total Bayar", align: "right", headerAlign: "center" }
       ],
       rows: Object.keys(calc.breakdown).map(name => {
@@ -195,28 +210,26 @@ app.post('/export-pdf', (req, res) => {
           name,
           itemsList || "-",
           `Rp ${formatMoney(b.itemsTotal)}`,
+          `Rp ${formatMoney(b.discount)}`,
           `Rp ${formatMoney(b.tax)}`,
           `Rp ${formatMoney(b.charge)}`,
-          `Rp ${formatMoney(b.discount)}`,
           `Rp ${formatMoney(b.total)}`,
         ];
       }),
     };
 
-    // columnsSize: semi-dinamis → Nama & angka fixed, List Pesanan fleksibel
     const memberColumns = [
-      55,              // Ditambah sedikit dari 50 agar nama tidak terpotong ketat
+      55,              // Nama
       pageWidth - 365, // Penyesuaian sisa ruang untuk List Pesanan
       60, 60, 60, 60, 70 
     ];
 
-    // OPSI TAMBAHAN PADA PDFKIT-TABLE UNTUK MEMASTIKAN HEADER RATA TENGAH
     doc.table(memberTable, { 
       width: pageWidth, 
       columnsSize: memberColumns,
-      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(9), // Opsional: menebalkan teks header
+      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(9), 
       prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-        doc.font("Helvetica").fontSize(8); // Mengembalikan font normal untuk baris data
+        doc.font("Helvetica").fontSize(8); 
       }
     });
     doc.moveDown();
@@ -242,7 +255,6 @@ app.post('/export-pdf', (req, res) => {
     res.status(500).json({ ok: false, error: e.message });
   }
 });
-
 
 app.get('/', (req, res) => {
   res.send('Split Backend berjalan 🚀');

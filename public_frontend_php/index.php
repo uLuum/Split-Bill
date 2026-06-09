@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Split Bill</title>
+  <link rel="icon" type="image/png" href="assets/logo-site.png">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>

@@ -36,6 +36,10 @@
         <h2>Biaya Layanan & Diskon</h2>
         <div class="row">
           <div>
+            <label for="discount">Diskon (Rp)</label>
+            <input id="discount" type="number" min="0" value="0">
+          </div>
+          <div>
             <label for="tax">Tax/Pajak (%)</label>
             <input id="tax" type="number" min="0" max="100" value="0">
           </div>
@@ -46,10 +50,6 @@
           <div>
             <label for="shipping">Biaya Kirim (Rp)</label>
             <input id="shipping" type="number" min="0" value="0">
-          </div>
-          <div>
-            <label for="discount">Diskon (Rp)</label>
-            <input id="discount" type="number" min="0" value="0">
           </div>
         </div>
         <div class="button-group">

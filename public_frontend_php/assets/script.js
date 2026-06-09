@@ -86,16 +86,16 @@ function buildPayload() {
     });
     return { name, items };
   });
-
+  
+  const discount = sanitizeNumberInput(document.getElementById('discount').value);
   const tax = sanitizeNumberInput(document.getElementById('tax').value);
   const service = sanitizeNumberInput(document.getElementById('service').value);
   const shipping = sanitizeNumberInput(document.getElementById('shipping').value);
-  const discount = sanitizeNumberInput(document.getElementById('discount').value);
 
   return {
+    discount,
     members,
     charges: { tax, service, shipping },
-    discount,
   };
 }
 
@@ -110,15 +110,38 @@ function renderResult(data, account = null) {
   // Ringkasan
   const summaryBox = el('div');
   summaryBox.className = 'summary-box';
+  
+  //Hitung DPP
+  const dppVisual = data.totalItems - data.discount;
+  const roundedDiscountPercent = Math.round(data.discountPercent);
+  
   summaryBox.innerHTML = `
     <h2>Ringkasan</h2>
     <table class="summary-table">
-      <tr><th>Total Pesanan</th><td>Rp ${formatMoney(data.totalItems)}</td></tr>
-      <tr><th>Tax/Pajak</th><td>Rp ${formatMoney(data.totalTax)} (${document.getElementById('tax').value || 0}%)</td></tr>
-      <tr><th>Biaya Layanan</th><td>Rp ${formatMoney(data.totalCharges)}</td></tr>
-      <tr><th>Subtotal</th><td>Rp ${formatMoney(data.grossTotal)}</td></tr>
-      <tr><th>Diskon</th><td>Rp ${formatMoney(data.discount)} (${data.discountPercent}%)</td></tr>
-      <tr><th>Grand Total</th><td><strong>Rp ${formatMoney(data.netTotal)}</strong></td></tr>
+      <tr>
+        <th>Total Pesanan</th>
+        <td>Rp ${formatMoney(data.totalItems)}</td>
+      </tr>
+      <tr>
+        <th>Diskon</th>
+        <td>Rp ${formatMoney(data.discount)} (${roundedDiscountPercent}%)</td>
+      </tr>
+      <tr>
+      <th>Setelah Diskon (DPP)</th>
+      <td>Rp ${formatMoney(dppVisual)}</td>
+      </tr>
+      <tr>
+      <th>Tax/Pajak</th>
+      <td>Rp ${formatMoney(data.totalTax)} (${document.getElementById('tax').value || 0}%)</td>
+      </tr>
+      <tr>
+      <th>Biaya Layanan & Ongkir</th>
+      <td>Rp ${formatMoney(data.totalCharges)}</td>
+      </tr>
+      <tr>
+      <th>Grand Total</th>
+      <td><strong>Rp ${formatMoney(data.netTotal)}</strong></td>
+      </tr>
     </table>
   `;
 
@@ -146,7 +169,7 @@ function renderResult(data, account = null) {
   // Detail anggota
   const table = el('table');
   table.innerHTML =
-    '<tr><th>Nama</th><th>List Pesanan</th><th>Total Pesanan</th><th>Tax/Pajak</th><th>Layanan & Ongkir</th><th>Hemat</th><th>Total Bayar</th></tr>';
+    '<tr><th>Nama</th><th>List Pesanan</th><th>Total Pesanan</th><th>Hemat</th><th>Tax/Pajak</th><th>Layanan & Ongkir</th><th>Total Bayar</th></tr>';
     
     Object.keys(data.breakdown).forEach((m) => {
       const b = data.breakdown[m];
@@ -167,9 +190,9 @@ function renderResult(data, account = null) {
       <td>${m}</td>
       <td class="items-column"></td>
       <td>Rp ${formatMoney(b.itemsTotal)}</td>
+      <td>Rp ${formatMoney(b.discount)}</td>
       <td>Rp ${formatMoney(b.tax)}</td>
       <td>Rp ${formatMoney(b.charge)}</td>
-      <td>Rp ${formatMoney(b.discount)}</td>
       <td><strong>Rp ${formatMoney(b.total)}</strong></td>
       `;
       
@@ -257,10 +280,10 @@ function resetAllData() {
 
   // Reset form input
   document.getElementById('resto').value = '';
+  document.getElementById('discount').value = 0;
   document.getElementById('tax').value = 0;
   document.getElementById('service').value = 0;
   document.getElementById('shipping').value = 0;
-  document.getElementById('discount').value = 0;
 
   // Reset rekening
   document.getElementById('bank').value = 'Pilih';

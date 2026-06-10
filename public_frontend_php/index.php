@@ -53,9 +53,6 @@
             <input id="shipping" type="number" min="0" value="0">
           </div>
         </div>
-        <div class="button-group">
-          <button id="calculate" type="button">Hitung</button>
-        </div>
       </div>
       
       <!-- Kanan: Rekening -->
@@ -70,19 +67,28 @@
             <option value="Mandiri">Mandiri</option>
             <option value="BRI">BRI</option>
             <option value="GoPay">GoPay</option>
-            <option value="OVO">OVO</option>
+            <option value="Dana">DANA</option>
             <option value="ShopeePay">ShopeePay</option>
-            <option value="Dana">Dana</option>
+            <option value="Ovo">OVO</option>
+            <option value="Lainnya">Bank Lainnya</option>
           </select>
-          <label>No. Rekening/No Telp:</label>
+          <div id="customBankContainer" style="display: none; margin-top: 8px;">
+              <label>Nama Bank:</label>
+              <input id="customBankName" placeholder="Masukkan nama Bank:">
+          </div>
+          <label style="margin-top: 8px;">No. Rekening/No Telp:</label>
           <input id="accountNumber" placeholder="0">
           <label>Atas Nama:</label>
           <input id="accountName" placeholder="Nama">
         </div>
-        <div class="button-group">
-          <button id="saveAccount" type="button">Simpan Rekening</button>
-        </div>
       </div>
+    </div>
+    
+    <!-- Tombol hitung -->
+    <div class="button-group" style="text-align: center; margin-top: 20px;">
+      <button id="calculate" type="button" style="width: 100%; max-width: 400px; padding: 12px; font-weight: bold;">
+        Hitung dan Simpan Rekening
+      </button>
     </div>
 
     <!-- Hasil -->

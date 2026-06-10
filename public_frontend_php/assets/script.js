@@ -212,16 +212,23 @@ function renderResult(data, account = null) {
 }
 
 /* ===================== Main Function ===================== */
-async function calculateAndRender(saveAccount = false) {
-  const bank = document.getElementById('bank').value;
+async function calculateAndRender() {
+  const bankSelect = document.getElementById('bank').value;
+  const customBankName = document.getElementById('customBankName').value.trim();
+  
+  // Logika penentu nama bank kustom jika memilih opsi "Lainnya"
+  const isCustomBank = (bankSelect === 'Lainnya' || bankSelect === 'Bank Lainnya');
+  
+  const finalBankName = isCustomBank 
+    ? (customBankName || 'Bank Lainnya') 
+    : bankSelect;
+    
   const accountNumber = document.getElementById('accountNumber').value;
   const accountName = document.getElementById('accountName').value;
-  const account = { bank, accountNumber, accountName };
+  const account = { bank: finalBankName, accountNumber, accountName };
 
-  if (saveAccount) {
-    localStorage.setItem('paymentAccount', JSON.stringify(account));
-    alert('Rekening berhasil disimpan!');
-  }
+  // Otomatis simpan data rekening ke localStorage saat menekan satu tombol ini
+  localStorage.setItem('paymentAccount', JSON.stringify(account));
 
   const body = buildPayload();
   const res = await fetch(`${backendUrl}/calculate`, {
@@ -238,10 +245,22 @@ async function calculateAndRender(saveAccount = false) {
   }
 }
 
+/* ===================== Dynamic Input Handler ===================== */
+// Listener untuk mendeteksi perubahan select bank ("Bank Lainnya")
+document.getElementById('bank').addEventListener('change', function() {
+  const customBankContainer = document.getElementById('customBankContainer');
+  if (this.value === 'Lainnya' || this.value === 'Bank Lainnya') {
+    customBankContainer.style.display = 'block';
+    document.getElementById('customBankName').focus();
+  } else {
+    customBankContainer.style.display = 'none';
+    document.getElementById('customBankName').value = '';
+  }
+});
+
 /* ===================== Event Binding ===================== */
 document.getElementById('addMember').onclick = () => addMemberSection();
 document.getElementById('calculate').onclick = () => calculateAndRender(false);
-document.getElementById('saveAccount').onclick = () => calculateAndRender(true);
 document.getElementById('resetAll').onclick = resetAllData;
 
 document.getElementById('exportPdf').onclick = async () => {
@@ -249,9 +268,8 @@ document.getElementById('exportPdf').onclick = async () => {
   payload.resto = document.getElementById('resto').value;
 
   // Ambil rekening terbaru dari localStorage
-  const account =
-    JSON.parse(localStorage.getItem('paymentAccount')) || {
-      bank: document.getElementById('bank').value,
+  const account = JSON.parse(localStorage.getItem('paymentAccount')) || {
+      bank: document.getElementById('bank').value === 'Lainnya' ? document.getElementById('customBankName').value.trim() : document.getElementById('bank').value,
       accountNumber: document.getElementById('accountNumber').value,
       accountName: document.getElementById('accountName').value,
     };
@@ -287,6 +305,8 @@ function resetAllData() {
 
   // Reset rekening
   document.getElementById('bank').value = 'Pilih';
+  document.getElementById('customBankName').value = '';
+  document.getElementById('customBankContainer').style.display = 'none';
   document.getElementById('accountNumber').value = '';
   document.getElementById('accountName').value = '';
 
